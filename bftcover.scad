@@ -1,7 +1,7 @@
-// template.scad
-// OpenSCAD Template
+// bftcover.scad
+// BFT Cover template
 // 
-// Copyright (C) 2014 Christopher Roberts
+// Copyright (C) 2015 Christopher Roberts
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,28 +18,51 @@
 
 
 // Global Parameters
-height = 1;
-width = 1;
-depth = 1;
+height        = 35;
+width         = 150;
+depth         = 100;
+corner_radius = 20;
+outerwall     = 5;
+$fn           = 60;
 
-module example() {
+module bftcover() {
 
     difference() {
 
         // Things that exist
         union() {
+            hull () {
+                translate( v = [corner_radius, corner_radius, 0] )                 cylinder( h = height, r = corner_radius );
+                translate( v = [width - corner_radius, corner_radius, 0] )         cylinder( h = height, r = corner_radius );
+                translate( v = [corner_radius, depth - corner_radius, 0] )         cylinder( h = height, r = corner_radius );
+                translate( v = [width - corner_radius, depth - corner_radius, 0] ) cylinder( h = height, r = corner_radius );
+            }
 
         }
 
         // Things to be cut out
         union() {
+            hull() {
+                translate( v = [corner_radius, corner_radius, 1] )                 color("red")    cylinder( h = height, r = corner_radius - outerwall );
+                translate( v = [width - corner_radius, corner_radius, 1] )         color("yellow") cylinder( h = height, r = corner_radius - outerwall );
+                translate( v = [corner_radius, depth - corner_radius, 1] )         color("blue")   cylinder( h = height, r = corner_radius - outerwall );
+                translate( v = [width - corner_radius, depth - corner_radius, 1] ) color("green")  cylinder( h = height, r = corner_radius - outerwall );
+            }
 
         }
     }
 
 }
 
-example();
+module sizecheck() {
+    difference() {
+        color("pink") cube( size = [width, depth, 1]);
+        translate( v = [outerwall, outerwall, -1]) cube( size = [width - outerwall*2, depth - outerwall*2, 3]);
+    }
+}
+
+bftcover();
+//translate( v = [0, 0, height + 2]) sizecheck();
 
 // -------------------------------------------------------------------------------------------
 // Commands
